@@ -43,6 +43,26 @@ def Exclude(vs, *regexs):
   return new_vs
 
 
+class Filename(object):
+  def __init__(self, fname):
+    self.fname = fname
+    self.noext, self.ext = os.path.splitext(self.fname)
+    self.path = os.path.dirname(self.noext)
+    self.base = os.path.basename(self.noext)
+
+  @property
+  def NoExtension(self):
+    return self.noext
+
+  @property
+  def Extension(self):
+    return self.ext
+
+  @property
+  def BaseNoExtension(self):
+    return self.base
+
+
 class Formatter(string.Formatter):
   # Borrowed from python stdlib's string.py
   def vformat(self, format_string, args, kwargs):
@@ -81,7 +101,10 @@ class Formatter(string.Formatter):
   def format_field(self, obj, format_spec):
     if format_spec == '-ext':
       assert isinstance(obj, str)
-      return os.path.splitext(obj)[0]
+      return Filename(obj).NoExtension
+    elif format_spec == 'base':
+      assert isinstance(obj, str)
+      return Filename(obj).BaseNoExtension
     return format(obj, format_spec)
 
 
@@ -236,19 +259,6 @@ class Build(Object):
 class Variable(Object):
   def Write(self, writer):
     writer.variable(key=self.key, value=self.value)
-
-
-class Filename(object):
-  def __init__(self, fname):
-    self.fname = fname
-
-  @property
-  def NoExtension(self):
-    return os.path.splitext(self.fname)[0]
-
-  @property
-  def Extension(self):
-    return os.path.splitext(self.fname)[1]
 
 
 def _DictContainsDict(haystack, needle):
