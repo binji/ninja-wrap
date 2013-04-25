@@ -46,9 +46,10 @@ def Exclude(vs, *regexs):
 class Filename(object):
   def __init__(self, fname):
     self.fname = fname
+    self.base = os.path.basename(self.fname)
     self.noext, self.ext = os.path.splitext(self.fname)
-    self.path = os.path.dirname(self.noext)
-    self.base = os.path.basename(self.noext)
+    self.path_noext = os.path.dirname(self.noext)
+    self.base_noext = os.path.basename(self.noext)
 
   @property
   def NoExtension(self):
@@ -60,6 +61,10 @@ class Filename(object):
 
   @property
   def BaseNoExtension(self):
+    return self.base_noext
+
+  @property
+  def Base(self):
     return self.base
 
 
